@@ -288,6 +288,16 @@ export class Game {
       this.debug.toggle();
     }
 
+    // Handle debug menu inputs (navigation, tuning, etc.)
+    if (this.debug?.enabled && inputSnap) {
+      this.debug.handleInput(inputSnap);
+
+      // Apply tuning changes immediately if on tuning page
+      if (this.debug.page === 3) {
+        this.debug.applyTuning();
+      }
+    }
+
     // Always advance WORLD (keeps physics + animation normal).
     // Level should stop its internal timer when won/dead.
     this.level.update({ input: inputSnap });
