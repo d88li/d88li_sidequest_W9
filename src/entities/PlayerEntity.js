@@ -317,7 +317,8 @@ export class PlayerEntity {
   // damage / effects
   // -----------------------
   takeDamageFromX(sourceX) {
-    if (this.debugState?.playerInvincible || this.invulnTimer > 0 || this.dead) return false;
+    if (this.debugState?.playerInvincible || this.invulnTimer > 0 || this.dead)
+      return false;
 
     this.health = Math.max(0, this.health - 1);
     if (this.health <= 0) this.pendingDeath = true;

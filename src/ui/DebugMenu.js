@@ -55,7 +55,7 @@ export class DebugMenu {
       this.debugState[opt.key] = !this.debugState[opt.key];
       // Dispatch event for any listeners (e.g., boar probe system)
       window.dispatchEvent(
-        new CustomEvent("debugStateChanged", { detail: opt.key })
+        new CustomEvent("debugStateChanged", { detail: opt.key }),
       );
       return true;
     }

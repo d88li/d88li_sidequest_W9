@@ -1,4 +1,4 @@
-# d88li_sidequest_6
+# d88li_sidequest_9
 
 ---
 
@@ -19,18 +19,27 @@ Navigate the platforms by jumping and running, attack the merchants as necessary
 
 ---
 
+## Debugging
+
+`: toggle debug menu on and off
+Space bar: turning a setting on and off
+
+Developer can show enemy probes, show collision boxes, make player invincible, and set the win condition to one.
+
+---
+
 ## Iteration Notes
 
 Three changes made based on playtesting:
 
-- Remapped player movement to correct corresponding sprite animation
-- Troubleshooted enemy's faulty movement path
-- Moved apples closer to the platform
+- added a debug menu
+- ensured debug menu functionality
+- fixed the enemy probes
 
 Two planned improvements:
 
-- replace audio with more satisfying audio
-- replace platform tiles to match the background better
+- fit debug menu text into the overlay box
+- add more functionalities into the debug menu like save points
 
 ---
 

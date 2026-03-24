@@ -65,7 +65,7 @@ export class Level {
 
     // player entity + controller
     this.player = null;
-    
+
     // Store all boar sprites for debug rendering
     this.boarSprites = [];
     this.playerCtrl = null;
@@ -80,10 +80,16 @@ export class Level {
     this._lastMaxHealth = null;
 
     // normalized world config
-    this.WIN_SCORE = Number(this.worldCfg.winScore ?? this.levelData?.winScore ?? 15);
-    this.GRAVITY = Number(this.worldCfg.gravity ?? this.levelData?.gravity ?? 10);
+    this.WIN_SCORE = Number(
+      this.worldCfg.winScore ?? this.levelData?.winScore ?? 15,
+    );
+    this.GRAVITY = Number(
+      this.worldCfg.gravity ?? this.levelData?.gravity ?? 10,
+    );
     this.FALL_RESET_MARGIN_TILES = Number(
-      this.worldCfg.fallResetMarginTiles ?? this.levelData?.fallResetMarginTiles ?? 3,
+      this.worldCfg.fallResetMarginTiles ??
+        this.levelData?.fallResetMarginTiles ??
+        3,
     );
 
     // IMPORTANT:
@@ -101,7 +107,9 @@ export class Level {
 
   _installEventListeners() {
     if (!this.events) return;
-    this._unsubs.push(this.events.on("player:attackWindow", (info) => this._tryHitBoar(info)));
+    this._unsubs.push(
+      this.events.on("player:attackWindow", (info) => this._tryHitBoar(info)),
+    );
   }
 
   destroy() {
@@ -143,9 +151,13 @@ export class Level {
     buildTilesAndGroups(this);
 
     // 2) Player entity + controller (WORLD)
-    this.player = new PlayerEntity(this.pkg, this.assets, { debugState: this.debugState });
+    this.player = new PlayerEntity(this.pkg, this.assets, {
+      debugState: this.debugState,
+    });
     this.player.buildSprites();
-    this.playerCtrl = new PlayerController(this.player, { events: this.events });
+    this.playerCtrl = new PlayerController(this.player, {
+      events: this.events,
+    });
 
     // 3) Cache spawns + wire interactions (ONE TIME) + hook boar collisions
     this._cacheLeafSpawns();
@@ -222,20 +234,20 @@ export class Level {
       push();
       noFill();
       rectMode(CENTER);
-      
+
       // Get tuning values for probe calculations
       const boarCfg = this.tuning?.boar || {};
       const PROBE_FORWARD = boarCfg.probeForward ?? 10;
       const PROBE_FRONT_Y = boarCfg.probeFrontY ?? 10;
       const PROBE_HEAD_Y = boarCfg.probeHeadY ?? 0;
       const PROBE_SIZE = boarCfg.probeSize ?? 4;
-      
+
       for (const boarSprite of this.boar) {
         // Draw boar center point (white)
         stroke("#fff");
         strokeWeight(1);
         point(boarSprite.x, boarSprite.y);
-        
+
         // Calculate and draw front probe (yellow F)
         const frontX = boarSprite.x + boarSprite.dir * PROBE_FORWARD;
         const frontY = boarSprite.y + PROBE_FRONT_Y;
@@ -246,7 +258,7 @@ export class Level {
         fill("#ff0");
         textSize(8);
         text("F", frontX - 8, frontY - 8);
-        
+
         // Calculate and draw foot probe (magenta FT)
         const footX = boarSprite.x + boarSprite.dir * PROBE_FORWARD;
         const footY = boarSprite.y - PROBE_HEAD_Y;
@@ -257,7 +269,7 @@ export class Level {
         fill("#f0f");
         textSize(8);
         text("FT", footX - 8, footY - 8);
-        
+
         // Calculate and draw ground probe (cyan G)
         const groundX = boarSprite.x;
         const groundY = boarSprite.y + boarSprite.h / 2 + 4;
@@ -329,7 +341,9 @@ export class Level {
     const p = this.playerCtrl.sprite;
 
     // leaf collect
-    p.overlaps(this.leaf, (playerSprite, leafSprite) => this._rescueLeaf(playerSprite, leafSprite));
+    p.overlaps(this.leaf, (playerSprite, leafSprite) =>
+      this._rescueLeaf(playerSprite, leafSprite),
+    );
 
     // fire damage
     p.overlaps(this.fire, (playerSprite, fireSprite) => {
@@ -379,7 +393,10 @@ export class Level {
     leafSprite.removeColliders();
 
     this.score++;
-    this.events?.emit("leaf:collected", { score: this.score, winScore: this.WIN_SCORE });
+    this.events?.emit("leaf:collected", {
+      score: this.score,
+      winScore: this.WIN_SCORE,
+    });
 
     if (this.debugState?.winScoreOne || this.score >= this.WIN_SCORE) {
       this.won = true;
@@ -388,7 +405,11 @@ export class Level {
       playerSprite.vel.x = 0;
       playerSprite.vel.y = 0;
 
-      this.events?.emit("level:won", { score: this.score, winScore: this.WIN_SCORE, elapsedMs: this.elapsedMs });
+      this.events?.emit("level:won", {
+        score: this.score,
+        winScore: this.WIN_SCORE,
+        elapsedMs: this.elapsedMs,
+      });
     }
   }
 
@@ -485,12 +506,18 @@ export class Level {
 
   _fallResetIfNeeded() {
     // Prefer levelData.tiles.tileH from levels.json; fall back to cfg / default
-    const tileH = Number(this.levelData?.tiles?.tileH ?? this.tilesCfg?.tileH ?? 24);
+    const tileH = Number(
+      this.levelData?.tiles?.tileH ?? this.tilesCfg?.tileH ?? 24,
+    );
     const p = this.playerCtrl.sprite;
     const playerDead = this.player?.dead === true;
 
     // Match monolith: fall reset only while alive and not won.
-    if (!playerDead && !this.won && p.y > this.bounds.levelH + tileH * this.FALL_RESET_MARGIN_TILES) {
+    if (
+      !playerDead &&
+      !this.won &&
+      p.y > this.bounds.levelH + tileH * this.FALL_RESET_MARGIN_TILES
+    ) {
       p.x = this.player.startX;
       p.y = this.player.startY;
       p.vel.x = 0;
@@ -506,20 +533,31 @@ export class Level {
       if (!s) continue;
 
       if (!Number.isFinite(s.x) || !Number.isFinite(s.y)) {
-        console.warn("[SANITY] removing sprite with bad position:", { x: s.x, y: s.y });
+        console.warn("[SANITY] removing sprite with bad position:", {
+          x: s.x,
+          y: s.y,
+        });
         s.remove?.();
         continue;
       }
 
       // NOTE: In p5play v3, w/h may be getter-only and still valid to read.
       if ("w" in s && (!Number.isFinite(s.w) || s.w <= 0)) {
-        console.warn("[SANITY] removing sprite with bad width:", { w: s.w, x: s.x, y: s.y });
+        console.warn("[SANITY] removing sprite with bad width:", {
+          w: s.w,
+          x: s.x,
+          y: s.y,
+        });
         s.remove?.();
         continue;
       }
 
       if ("h" in s && (!Number.isFinite(s.h) || s.h <= 0)) {
-        console.warn("[SANITY] removing sprite with bad height:", { h: s.h, x: s.x, y: s.y });
+        console.warn("[SANITY] removing sprite with bad height:", {
+          h: s.h,
+          x: s.x,
+          y: s.y,
+        });
         s.remove?.();
         continue;
       }
@@ -527,7 +565,9 @@ export class Level {
       if (s.body) {
         const p = s.body.getPosition?.();
         if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y)) {
-          console.warn("[SANITY] removing sprite with bad body position:", { p });
+          console.warn("[SANITY] removing sprite with bad body position:", {
+            p,
+          });
           s.remove?.();
         }
       }
