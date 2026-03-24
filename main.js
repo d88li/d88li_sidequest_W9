@@ -46,6 +46,7 @@ import { CameraController } from "./src/CameraController.js";
 import { InputManager } from "./src/InputManager.js";
 import { SoundManager } from "./src/SoundManager.js";
 import { DebugOverlay } from "./src/DebugOverlay.js";
+import { DebugMenu } from "./src/ui/DebugMenu.js";
 
 import { WinScreen } from "./src/ui/WinScreen.js";
 import { LoseScreen } from "./src/ui/LoseScreen.js";
@@ -97,6 +98,13 @@ let cameraController; // VIEW: follow + clamp camera to world bounds
 let inputManager; // SYSTEM: keyboard snapshot
 let soundManager; // SYSTEM: audio registry
 let debugOverlay; // VIEW/SYSTEM: debug UI
+let debugMenu; // VIEW/SYSTEM: debug menu
+let debugState = {
+  boarProbes: false,
+  collisionBoxes: false,
+  playerInvincible: false,
+  winScoreOne: false,
+};
 
 let winScreen;
 let loseScreen;
@@ -197,6 +205,7 @@ function initRuntime() {
   // Systems
   inputManager = new InputManager();
   debugOverlay = new DebugOverlay();
+  debugMenu = new DebugMenu(debugState);
 
   // WORLD
   game = new Game(levelPkg, assets, {
@@ -204,6 +213,8 @@ function initRuntime() {
     inputManager,
     soundManager,
     debugOverlay,
+    debugMenu,
+    debugState,
   });
   game.build();
 
@@ -324,6 +335,9 @@ function draw() {
   // but we keep them outside of any camera.off scope here.
   if (won) winScreen?.draw({ elapsedMs, game });
   if (dead) loseScreen?.draw({ elapsedMs, game });
+
+  // Draw debug menu (after other overlays)
+  debugMenu?.draw();
 }
 
 // ------------------------------------------------------------
@@ -336,6 +350,15 @@ function mousePressed() {
 
 function keyPressed(evt) {
   unlockAudioOnce();
+  // Backtick toggles debug menu
+  if (evt.key === "`") {
+    debugMenu?.toggle();
+    return false;
+  }
+  // Forward other keys to debug menu if enabled
+  if (debugMenu?.handleInput(evt)) {
+    return false;
+  }
   return preventKeysThatScroll(evt);
 }
 

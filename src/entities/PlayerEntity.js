@@ -12,9 +12,10 @@
 // - Does NOT decide game win state (Level does)
 
 export class PlayerEntity {
-  constructor(pkg, assets) {
+  constructor(pkg, assets, opts = {}) {
     this.pkg = pkg;
     this.assets = assets;
+    this.debugState = opts.debugState || null;
 
     this.tuning = pkg.tuning || {};
     this.playerCfg = this.tuning.player || {};
@@ -316,7 +317,7 @@ export class PlayerEntity {
   // damage / effects
   // -----------------------
   takeDamageFromX(sourceX) {
-    if (this.invulnTimer > 0 || this.dead) return false;
+    if (this.debugState?.playerInvincible || this.invulnTimer > 0 || this.dead) return false;
 
     this.health = Math.max(0, this.health - 1);
     if (this.health <= 0) this.pendingDeath = true;

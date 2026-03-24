@@ -339,18 +339,21 @@ export class BoarController {
     e.footProbe.sensor = true;
     e.footProbe.visible = false;
     e.footProbe.layer = 999;
+    e.footProbe.physics = "static";
 
     e.frontProbe = new Sprite(-9999, -9999, this.PROBE_SIZE, this.PROBE_SIZE);
     e.frontProbe.collider = "none";
     e.frontProbe.sensor = true;
     e.frontProbe.visible = false;
     e.frontProbe.layer = 999;
+    e.frontProbe.physics = "static";
 
     e.groundProbe = new Sprite(-9999, -9999, this.PROBE_SIZE, this.PROBE_SIZE);
     e.groundProbe.collider = "none";
     e.groundProbe.sensor = true;
     e.groundProbe.visible = false;
     e.groundProbe.layer = 999;
+    e.groundProbe.physics = "static";
   }
 
   _updateProbes(e) {

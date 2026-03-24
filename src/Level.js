@@ -35,6 +35,7 @@ export class Level {
     this.assets = assets;
     this.hudGfx = opts.hudGfx || null;
     this.events = opts.events || null;
+    this.debugState = opts.debugState || null;
 
     this.levelData = pkg.level;
     this.tuning = pkg.tuning || {};
@@ -64,6 +65,9 @@ export class Level {
 
     // player entity + controller
     this.player = null;
+    
+    // Store all boar sprites for debug rendering
+    this.boarSprites = [];
     this.playerCtrl = null;
 
     // restart bookkeeping
@@ -139,7 +143,7 @@ export class Level {
     buildTilesAndGroups(this);
 
     // 2) Player entity + controller (WORLD)
-    this.player = new PlayerEntity(this.pkg, this.assets);
+    this.player = new PlayerEntity(this.pkg, this.assets, { debugState: this.debugState });
     this.player.buildSprites();
     this.playerCtrl = new PlayerController(this.player, { events: this.events });
 
@@ -198,6 +202,75 @@ export class Level {
 
   drawWorld() {
     allSprites.draw();
+
+    // Debug rendering
+    if (this.debugState?.collisionBoxes) {
+      push();
+      noFill();
+      stroke("#0ff");
+      strokeWeight(1);
+      rectMode(CENTER);
+      for (const s of allSprites) {
+        if (s.x && s.y && s.width && s.height) {
+          rect(s.x, s.y, s.width, s.height);
+        }
+      }
+      pop();
+    }
+
+    if (this.debugState?.boarProbes && this.boar) {
+      push();
+      noFill();
+      rectMode(CENTER);
+      
+      // Get tuning values for probe calculations
+      const boarCfg = this.tuning?.boar || {};
+      const PROBE_FORWARD = boarCfg.probeForward ?? 10;
+      const PROBE_FRONT_Y = boarCfg.probeFrontY ?? 10;
+      const PROBE_HEAD_Y = boarCfg.probeHeadY ?? 0;
+      const PROBE_SIZE = boarCfg.probeSize ?? 4;
+      
+      for (const boarSprite of this.boar) {
+        // Draw boar center point (white)
+        stroke("#fff");
+        strokeWeight(1);
+        point(boarSprite.x, boarSprite.y);
+        
+        // Calculate and draw front probe (yellow F)
+        const frontX = boarSprite.x + boarSprite.dir * PROBE_FORWARD;
+        const frontY = boarSprite.y + PROBE_FRONT_Y;
+        stroke("#ff0");
+        strokeWeight(2);
+        noFill();
+        rect(frontX, frontY, PROBE_SIZE, PROBE_SIZE);
+        fill("#ff0");
+        textSize(8);
+        text("F", frontX - 8, frontY - 8);
+        
+        // Calculate and draw foot probe (magenta FT)
+        const footX = boarSprite.x + boarSprite.dir * PROBE_FORWARD;
+        const footY = boarSprite.y - PROBE_HEAD_Y;
+        stroke("#f0f");
+        strokeWeight(2);
+        noFill();
+        rect(footX, footY, PROBE_SIZE, PROBE_SIZE);
+        fill("#f0f");
+        textSize(8);
+        text("FT", footX - 8, footY - 8);
+        
+        // Calculate and draw ground probe (cyan G)
+        const groundX = boarSprite.x;
+        const groundY = boarSprite.y + boarSprite.h / 2 + 4;
+        stroke("#0ff");
+        strokeWeight(2);
+        noFill();
+        rect(groundX, groundY, PROBE_SIZE, PROBE_SIZE);
+        fill("#0ff");
+        textSize(8);
+        text("G", groundX - 8, groundY - 8);
+      }
+      pop();
+    }
   }
 
   restart() {
@@ -308,7 +381,7 @@ export class Level {
     this.score++;
     this.events?.emit("leaf:collected", { score: this.score, winScore: this.WIN_SCORE });
 
-    if (this.score >= this.WIN_SCORE) {
+    if (this.debugState?.winScoreOne || this.score >= this.WIN_SCORE) {
       this.won = true;
 
       // freeze player immediately (monolith behavior)

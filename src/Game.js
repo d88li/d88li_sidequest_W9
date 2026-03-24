@@ -34,6 +34,8 @@ export class Game {
     this.input = opts.inputManager || null;
     this.sound = opts.soundManager || null;
     this.debug = opts.debugOverlay || null;
+    this.debugMenu = opts.debugMenu || null;
+    this.debugState = opts.debugState || null;
 
     // highscores (SYSTEM)
     this.highScores = opts.highScores || new HighScoreManager();
@@ -71,6 +73,7 @@ export class Game {
     this.level = new Level(this.pkg, this.assets, {
       hudGfx: this.hudGfx,
       events: this.events,
+      debugState: this.debugState,
     });
     this.level.build();
 
@@ -288,16 +291,6 @@ export class Game {
       this.debug.toggle();
     }
 
-    // Handle debug menu inputs (navigation, tuning, etc.)
-    if (this.debug?.enabled && inputSnap) {
-      this.debug.handleInput(inputSnap);
-
-      // Apply tuning changes immediately if on tuning page
-      if (this.debug.page === 3) {
-        this.debug.applyTuning();
-      }
-    }
-
     // Always advance WORLD (keeps physics + animation normal).
     // Level should stop its internal timer when won/dead.
     this.level.update({ input: inputSnap });
@@ -383,6 +376,7 @@ export class Game {
     drawHudFn?.();
 
     if (this.debug) this.debug.draw?.({ game: this });
+    if (this.debugMenu) this.debugMenu.draw?.();
   }
 
   restart() {

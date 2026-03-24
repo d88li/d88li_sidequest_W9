@@ -22,13 +22,6 @@ export class InputManager {
       attack: false,
       restart: false,
       debugToggle: false,
-      debugPageNext: false,
-      debugPagePrev: false,
-      debugTuneUp: false,
-      debugTuneDown: false,
-      debugTuneIncrease: false,
-      debugTuneDecrease: false,
-      debugToggleCollisions: false,
     };
 
     // canonical snapshot (same object reused every frame)
@@ -42,13 +35,6 @@ export class InputManager {
       attackPressed: false,
       restartPressed: false,
       debugTogglePressed: false,
-      debugPageNext: false,
-      debugPagePrev: false,
-      debugTuneUp: false,
-      debugTuneDown: false,
-      debugTuneIncrease: false,
-      debugTuneDecrease: false,
-      debugToggleCollisions: false,
     };
   }
 
@@ -61,13 +47,6 @@ export class InputManager {
       this._input.attackPressed = false;
       this._input.restartPressed = false;
       this._input.debugTogglePressed = false;
-      this._input.debugPageNext = false;
-      this._input.debugPagePrev = false;
-      this._input.debugTuneUp = false;
-      this._input.debugTuneDown = false;
-      this._input.debugTuneIncrease = false;
-      this._input.debugTuneDecrease = false;
-      this._input.debugToggleCollisions = false;
       return this._input;
     }
 
@@ -87,19 +66,6 @@ export class InputManager {
     const restartDown = kb.pressing("r");
     const debugToggleDown = kb.pressing("t");
 
-    // Debug menu navigation
-    const debugPageNextDown = kb.pressing("tab") || kb.pressing("e");
-    const debugPagePrevDown = kb.pressing("q");
-
-    // Debug tuning
-    const debugTuneUpDown = kb.pressing("arrowup");
-    const debugTuneDownDown = kb.pressing("arrowdown");
-    const debugTuneIncreaseDown = kb.pressing("=") || kb.pressing("+");
-    const debugTuneDecreaseDown = kb.pressing("-");
-
-    // Debug collision visualization
-    const debugToggleCollisionsDown = kb.pressing("c");
-
     // -----------------------
     // Write snapshot
     // -----------------------
@@ -111,14 +77,6 @@ export class InputManager {
     this._input.restartPressed = restartDown && !this._prevDown.restart;
     this._input.debugTogglePressed = debugToggleDown && !this._prevDown.debugToggle;
 
-    this._input.debugPageNext = debugPageNextDown && !this._prevDown.debugPageNext;
-    this._input.debugPagePrev = debugPagePrevDown && !this._prevDown.debugPagePrev;
-    this._input.debugTuneUp = debugTuneUpDown && !this._prevDown.debugTuneUp;
-    this._input.debugTuneDown = debugTuneDownDown && !this._prevDown.debugTuneDown;
-    this._input.debugTuneIncrease = debugTuneIncreaseDown && !this._prevDown.debugTuneIncrease;
-    this._input.debugTuneDecrease = debugTuneDecreaseDown && !this._prevDown.debugTuneDecrease;
-    this._input.debugToggleCollisions = debugToggleCollisionsDown && !this._prevDown.debugToggleCollisions;
-
     // -----------------------
     // Store prev DOWN states
     // -----------------------
@@ -126,13 +84,6 @@ export class InputManager {
     this._prevDown.attack = attackDown;
     this._prevDown.restart = restartDown;
     this._prevDown.debugToggle = debugToggleDown;
-    this._prevDown.debugPageNext = debugPageNextDown;
-    this._prevDown.debugPagePrev = debugPagePrevDown;
-    this._prevDown.debugTuneUp = debugTuneUpDown;
-    this._prevDown.debugTuneDown = debugTuneDownDown;
-    this._prevDown.debugTuneIncrease = debugTuneIncreaseDown;
-    this._prevDown.debugTuneDecrease = debugTuneDecreaseDown;
-    this._prevDown.debugToggleCollisions = debugToggleCollisionsDown;
 
     return this._input;
   }
