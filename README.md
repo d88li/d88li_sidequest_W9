@@ -10,10 +10,10 @@ A dungeon platformer where the player, a thief, attempts to steal all the apples
 
 ## Set up and interaction instructions
 
-Up arrow key: Jump
-Left arrow key: Run left
-Right arrow key: Run right
-Space bar: Attack
+- Up arrow key: Jump
+- Left arrow key: Run left
+- Right arrow key: Run right
+- Space bar: Attack
 
 Navigate the platforms by jumping and running, attack the merchants as necessary. Collect as many apples as possible as you navigate through the map.
 
@@ -21,8 +21,8 @@ Navigate the platforms by jumping and running, attack the merchants as necessary
 
 ## Debugging
 
-`: toggle debug menu on and off
-Space bar: turning a setting on and off
+- `: toggle debug menu on and off
+- Space bar: turning a setting on and off
 
 Developer can show enemy probes, show collision boxes, make player invincible, and set the win condition to one.
 
